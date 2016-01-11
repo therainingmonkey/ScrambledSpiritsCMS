@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Scrambled Spirits Collective</title>
+	<link rel="stylesheet" type="text/css" href="{{.StaticPath}}/stylesheet.css">
+</head>
+<body>
+
+<ul class="topnav">
+	<li><a href="/">Home</a></li>
+	<li><a href="thecalamity">The Calamity</a></li>
+	<li><a href="aweatherman">A Weatherman</a></li>
+	<li><a href="bingolittle">Bingo Little</a></li>
+	<li><a href="figurinesofthewretched">Figurines of the Wretched</a></li>
+	<!-- Right aligned section -->
+	<ul class="topnav right">
+		<li><a href="shop">Shop!</a></li>
+	</ul>
+</ul>
+
+<h1>Templated content below!</h1>
+	{{range .Posts}}
+		{{.Title}}
+	{{end}}
+
+	<p>End of template.</p>
+	<img src="static/img.jpg">
+
+</body>
+</html>

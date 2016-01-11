@@ -1,0 +1,42 @@
+body {
+	background-color: darkslategray;
+	color: darkturquoise;
+	margin: 0;
+}
+
+ul.topnav {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: black;
+}
+
+ul.topnav li {
+	float: left;
+}
+
+ul.topnav li a {
+	display: block;
+	color: darkseagreen;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+}
+
+ul.topnav li a:hover {
+	background-color: crimson;
+}
+
+ul.topnav ul.right {
+	float: right;
+	list-style-type: none;
+	background-color: darkblue;
+}
+
+/* Stacks the top navbar when the screen is too narrow for it to fit.
+Responsivityness! */
+@media screen and (max-width: 850px) {
+	ul.topnav ul.right,
+	ul.topnav li {float: none;}
+}
