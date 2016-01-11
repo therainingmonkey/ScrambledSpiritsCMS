@@ -1,5 +1,32 @@
+<<<<<<< HEAD
 # https://git-scm.com/docs/gitignore
 # https://help.github.com/articles/ignoring-files
 # Example .gitignore files: https://github.com/github/gitignore
 /bower_components/
 /node_modules/
+=======
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+
+# Folders
+_obj
+_test
+
+# Architecture specific extensions/prefixes
+*.[568vq]
+[568vq].out
+
+*.cgo1.go
+*.cgo2.c
+_cgo_defun.c
+_cgo_gotypes.go
+_cgo_export.*
+
+_testmain.go
+
+*.exe
+*.test
+*.prof
+>>>>>>> Github/master
