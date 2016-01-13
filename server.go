@@ -22,11 +22,23 @@ const STATIC_ROOT string = "static/"
 
 var db gorm.DB
 
+var ArtistContextMap = map[string]ArtistContext {
+	"thecalamity": ArtistContext {
+		About: "The Calamity are a band."
+	}
+}
+
 type Context struct {
 	Title string
 	StaticPath string
 	Posts []models.Post
 }
+
+type ArtistContext struct {
+	Context
+	About string
+}
+
 
 func checkErr(err error, message string){
 	if err != nil{
@@ -36,13 +48,15 @@ func checkErr(err error, message string){
 
 func initDB() (err error) {
 	db, err = gorm.Open("sqlite3", "test.db") // TODO change db name
-//	db.LogMode(true) // DEBUG
-	db.CreateTable(&models.Post{})
-	db.AutoMigrate()
+	db.CreateTable(&models.Post{}) // Create a table for posts
+	// Create a table for each tag linking to posts with that tag
+	for artistName, _ := range ArtistContextMap {
+		db.Table("Tag" + artistName).CreateTable(&models.Tag) // Append "tag" to artistName to avoid future collisions
+	}
+	db.AutoMigrate() //DEBUG ?
 	return err
 }
 
-// TODO change to func render, to be called from other page handlers.
 func render(w http.ResponseWriter, context Context) {
 	context.StaticPath = STATIC_URL
 	t, err := template.ParseFiles("templates/main.html")
@@ -51,12 +65,31 @@ func render(w http.ResponseWriter, context Context) {
 	checkErr(err, "Could not execute template")
 }
 
-//TODO separate context from server logic.
-func home(w http.ResponseWriter, req * http.Request) {
+//TODO separate context from server logic?
+func homeHandler(w http.ResponseWriter, req * http.Request) {
 	context := Context{Title: "Scrambled Spirits Collective"}
-	db.Order("created_at desc").Find(&context.Posts)
+	db.Order("created_at desc").Find(&context.Posts) // Fills context.Posts with posts from the database.
 	render(w, context)
 }
+
+func artistHandler(w http.ResponseWriter, req *http.Request) {
+	artistName := req.URL.Path["len(artist/"):] // Get artist name from URL
+	if len(artistName) != 0 {
+		context, ok := ArtistContextMap[artistName] // OK is true if the key exists, false otherwise
+		if ok {
+			// Lookup tag from artistcontextmap
+			db.Limit(10).Order("created_at desc").Table("Tag" + artistName).Association("Post").Find(&context.Posts)
+			// TODO ++ Update database schema & queries for tag tables.
+			render(w, context)
+		}
+	}
+	http.NotFound(w, req)
+}
+
+/* TODO
+func adminHandler(w http.ResponseWriter, req *http.Request) {
+
+}*/
 
 func staticHandler(w http.ResponseWriter, req *http.Request) {
 	file_name := req.URL.Path[len(STATIC_URL):] // Get filename from URL
@@ -75,7 +108,9 @@ func main(){
 	err := initDB()
 	checkErr(err, "Could not open database")
 
-	http.HandleFunc("/", home)
+	http.HandleFunc("/", homeHandler)
+	http.HandleFunc("/artist/", artistHandler)
 	http.HandleFunc("/static/", staticHandler)
+	http.HandleFunc("/admin/", adminHandler)
 	http.ListenAndServe(":8080", nil)
 }
