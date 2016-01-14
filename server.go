@@ -1,11 +1,14 @@
 /*
+TODO: Authentication for editors/admin
 TODO: Interface for making / editing posts
-TODO: Write content (band blurbs etc.)
+TODO: Write content (band blurbs etc.) (Twitter feed? FB like link?)
 TODO: Make pages prettier (CSS, Images)
+TODO: Add RSS feed (gorilla/feeds)
 */
 package main
 
 import (
+	"fmt"
 	"io"
 	"html/template"
 	"net/http"
@@ -17,26 +20,21 @@ import (
 	"./models"
 )
 
-const STATIC_URL string = "static/"
-const STATIC_ROOT string = "static/"
+const (
+	STATIC_URL string = "static/"
+	STATIC_ROOT string = "static/"
+)
 
-var db gorm.DB
-
-var ArtistContextMap = map[string]ArtistContext {
-	"thecalamity": ArtistContext {
-		About: "The Calamity are a band."
-	}
-}
+var (
+	db gorm.DB
+	ArtistContextMap = map[string]Context {"thecalamity": Context {StaticText: "The Calamity are a band."}} // TODO Content
+)
 
 type Context struct {
 	Title string
 	StaticPath string
+	StaticText string
 	Posts []models.Post
-}
-
-type ArtistContext struct {
-	Context
-	About string
 }
 
 
@@ -47,11 +45,13 @@ func checkErr(err error, message string){
 }
 
 func initDB() (err error) {
+	// TODO Check whether tables exist before creating them
 	db, err = gorm.Open("sqlite3", "test.db") // TODO change db name
+	checkErr(err, "Could not open databse")
 	db.CreateTable(&models.Post{}) // Create a table for posts
 	// Create a table for each tag linking to posts with that tag
 	for artistName, _ := range ArtistContextMap {
-		db.Table("Tag" + artistName).CreateTable(&models.Tag) // Append "tag" to artistName to avoid future collisions
+		db.Table("Tag" + artistName).CreateTable(&models.Tag{}) // Append "tag" to artistName to avoid future collisions
 	}
 	db.AutoMigrate() //DEBUG ?
 	return err
@@ -67,19 +67,19 @@ func render(w http.ResponseWriter, context Context) {
 
 //TODO separate context from server logic?
 func homeHandler(w http.ResponseWriter, req * http.Request) {
-	context := Context{Title: "Scrambled Spirits Collective"}
+	context := Context{Title: "Scrambled Spirits Collective", StaticText: "SSC 4 lyf 2k6teen!"} // TODO Content
 	db.Order("created_at desc").Find(&context.Posts) // Fills context.Posts with posts from the database.
 	render(w, context)
 }
 
 func artistHandler(w http.ResponseWriter, req *http.Request) {
-	artistName := req.URL.Path["len(artist/"):] // Get artist name from URL
+	artistName := req.URL.Path[len("/artist/"):] // Get artist name from URL
 	if len(artistName) != 0 {
 		context, ok := ArtistContextMap[artistName] // OK is true if the key exists, false otherwise
 		if ok {
+			fmt.Println("Artist found.")
 			// Lookup tag from artistcontextmap
-			db.Limit(10).Order("created_at desc").Table("Tag" + artistName).Association("Post").Find(&context.Posts)
-			// TODO ++ Update database schema & queries for tag tables.
+			db.Limit(10).Order("created_at desc").Table("Tag" + artistName).Association("Post").Find(&context.Posts) // FIXME
 			render(w, context)
 		}
 	}
@@ -111,6 +111,6 @@ func main(){
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/artist/", artistHandler)
 	http.HandleFunc("/static/", staticHandler)
-	http.HandleFunc("/admin/", adminHandler)
+//	http.HandleFunc("/admin/", adminHandler)
 	http.ListenAndServe(":8080", nil)
 }

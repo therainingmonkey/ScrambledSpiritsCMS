@@ -1,7 +1,7 @@
 # ScrambledSpiritsCMS
 A web server / CMS for The Scrambled Spirits Collective
 
-##This is unfinished software
+## This is unfinished software
 
 Roadmap
 -------
