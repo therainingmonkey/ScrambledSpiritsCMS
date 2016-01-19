@@ -1,24 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Scrambled Spirits Collective</title>
-	<link rel="stylesheet" type="text/css" href="{{.StaticPath}}/stylesheet.css">
-</head>
-<body>
+{{define "content"}}
+{{template "header" .}}
 
-<ul class="topnav">
-	<li><a href="/">Home</a></li>
-	<li><a href="artist/thecalamity">The Calamity</a></li>
-	<li><a href="artist/aweatherman">A Weatherman</a></li>
-	<li><a href="artist/bingolittle">Bingo Little</a></li>
-	<li><a href="artist/figurinesofthewretched">Figurines of the Wretched</a></li>
-	<!-- Right aligned section -->
-	<ul class="topnav right">
-		<li><a href="shop">Shop!</a></li>
-	</ul>
-</ul>
-
-<h1>Templated content below!</h1>
+<h1>{{.Title}}</h1>
 	{{.StaticText}}
 	<hr>
 	{{range .Posts}}
@@ -28,5 +11,5 @@
 	<p>End of template.</p>
 	<img src="static/img.jpg">
 
-</body>
-</html>
+{{template "footer" .}}
+{{end}}

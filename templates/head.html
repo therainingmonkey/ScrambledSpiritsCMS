@@ -1,0 +1,22 @@
+{{define "header"}}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{.Title}}</title>
+	<link rel="stylesheet" type="text/css" href="/static/stylesheet.css">
+</head>
+<body>
+
+<ul class="topnav">
+	<li><a href="/">Home</a></li>
+	<li><a href="/artist/thecalamity">The Calamity</a></li>
+	<li><a href="/artist/aweatherman">A Weatherman</a></li>
+	<li><a href="/artist/bingolittle">Bingo Little</a></li>
+	<li><a href="/artist/figurinesofthewretched">Figurines of the Wretched</a></li>
+	<!-- Right aligned section -->
+	<ul class="topnav right">
+		{{if .Username}}<li>{{.Username}}<br><small><a href="/logout">logout</a></small></li>{{end}}
+		<li><a href="/shop">Shop!</a></li>
+	</ul>
+</ul>
+{{end}}

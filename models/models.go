@@ -25,7 +25,12 @@ type Post struct {
 // Tag table, one table for each tag
 type Tag struct {
 	gorm.Model
-	ID		uint			`gorm:"primary_key"`
-	Post	Post
+	PostID	uint
 
+}
+
+type User struct {
+	gorm.Model
+	Username string
+	PasswordHash string
 }

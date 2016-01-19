@@ -1,0 +1,18 @@
+{{define "content"}}
+{{template "header"}}
+
+<h2>Editing {{.Posts.Title}}</h2>
+
+{{range .Posts}}
+	<form method="POST">
+		Title: <input type="text" name="title" value="{{.Title}}"><br>
+		Author: <input type="text" name="author" value="{{.Author}}"><br>
+		Created At: <input type="text" name="created" value="{{.CreatedAt}}">
+		<div>
+			<textarea name="body" rows="50" cols="80">{{.Body}}</textarea>
+		</div>
+		<input type="submit" value="Save">
+	</form>
+{{end}}
+{{template "footer"}}
+{{end}}
