@@ -8,7 +8,8 @@ import (
 
 var cookieHandler = securecookie.New(
 	securecookie.GenerateRandomKey(64), // Hash key
-	securecookie.GenerateRandomKey(32)) // Block key
+	securecookie.GenerateRandomKey(32), // Block key
+)
 
 // Takes a string and retruns its hash as type []byte
 func CreateHash(pass string) (passwordHash string) {

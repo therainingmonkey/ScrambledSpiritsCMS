@@ -1,9 +1,8 @@
 /*
-TODO: Authentication for editors/admin
-TODO: Interface for making / editing posts
+TODO: Delete posts & post tags
 TODO: Write content (band blurbs etc.) (Twitter feed? FB like link?)
 TODO: Make pages prettier (CSS, Images)
-TODO: Add RSS feed (gorilla/feeds)
+TODO: Add RSS feed (gorilla/feeds?)
 */
 package main
 
@@ -11,6 +10,7 @@ import (
 	"io"
 	"html/template"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -18,10 +18,6 @@ import (
 	// Local Packages
 	"./auth"
 	"./models"
-)
-
-const (
-	STATIC_ROOT string = "static/"
 )
 
 var (
@@ -39,7 +35,7 @@ type Context struct {
 
 func checkErr(err error, message string){
 	if err != nil{
-		panic(message) // TODO Change to log.Fatal(message)
+		panic(message + err.Error()) // TODO Change to log.Fatal(message)
 	}
 }
 
@@ -116,23 +112,32 @@ func loginHandler(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+// TODO Restructure - subfunctions (error handling)
 func editHandler(w http.ResponseWriter, req *http.Request) {
-	username := auth.GetUserName(req)
-	if username != "" { // If they have an authentication cookie
+	context := Context{Username: auth.GetUserName(req)}
+	context.Posts = append(context.Posts, models.Post{})
+	if context.Username != "" { // If they have an authentication cookie
+		post := &context.Posts[0]
+		if len(req.URL.Path[len("/edit/"):]) > 0 { // If a post ID is referred to in the URL
+			urlID, err := strconv.Atoi(req.URL.Path[len("/edit/"):]) //Get the target post ID from URL
+			checkErr(err, "Could not get postID from URL")
+			post.ID = uint(urlID)
+			db.FirstOrCreate(post) // If db contains post.ID, copy the entry to post; else create an entry
+		}
 		switch req.Method {
 			case "GET":
-				context := Context{Username: username}
-				postID := req.URL.Path[len("/edit/"):]
-				if err := db.Where("ID = ?", postID).First(&context.Posts).Error;  err == gorm.RecordNotFound {
-					http.NotFound(w, req)
-					break
-				}
 				err := render(w, context, "templates/edit.html")
 				checkErr(err, "Could not render Edit template")
 			case "POST":
-			// TODO ++ DB operations
+				post.Title = req.FormValue("title")
+				post.Author = req.FormValue("author")
+				post.CreatedAt, _ = time.Parse(time.RFC3339, req.FormValue("created"))
+				post.UpdatedAt, _ = time.Parse(time.RFC3339, req.FormValue("updated"))
+				post.Body = req.FormValue("body")
+				db.Save(&post)
+			http.Redirect(w, req, "/", 302)
 		}
-	} else {
+	} else { // If no auth cookie
 		http.NotFound(w, req)
 	}
 }
@@ -150,7 +155,7 @@ func adminHandler(w http.ResponseWriter, req *http.Request) {
 func staticHandler(w http.ResponseWriter, req *http.Request) {
 	file_name := req.URL.Path[len("static/"):] // Get filename from URL
 	if len(file_name) != 0 {
-		f, err := http.Dir(STATIC_ROOT).Open(file_name)
+		f, err := http.Dir("static/").Open(file_name)
 		if err == nil {
 			content := io.ReadSeeker(f)
 			http.ServeContent(w, req, file_name, time.Now(), content)

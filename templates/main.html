@@ -4,8 +4,17 @@
 <h1>{{.Title}}</h1>
 	{{.StaticText}}
 	<hr>
+	{{if .Username}}<a href="/edit/">New post</a>{{end}}
 	{{range .Posts}}
-		{{.Title}}
+		<div class="PostInfo">
+			<h3>{{.Title}}</h3> by {{.Author}}
+		</div>
+		<div class="PostBody">
+		{{.Body}}
+		</div>
+		{{if $.Username}}
+			<a href="/edit/{{.ID}}">edit</a>
+		{{end}}
 	{{end}}
 
 	<p>End of template.</p>
