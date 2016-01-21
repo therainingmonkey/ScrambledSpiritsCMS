@@ -4,14 +4,15 @@
 {{range .Posts}}
 	<h2>Editing {{.Title}}</h2>
 	<form method="POST">
+		{{if .ID}}<input type="submit" name="deleteButton" value="Delete!"><br>{{end}}
 		Title: <input type="text" name="title" value="{{.Title}}"><br>
 		Author: <input type="text" name="author" value="{{.Author}}"><br>
 		Created At (works best with Chrome): <input type="datetime-local" name="created" value="{{.CreatedAt}}"><br>
 		Updated At (works best with Chrome: <input type="datetime-local" name="updated" value="{{.UpdatedAt}}">
-	   <div class="EditPostBody">
+		<div class="EditPostBody">
 			<textarea name="body" rows="50" cols="80">{{.Body}}</textarea>
 		</div>
-		<input type="submit" value="Save">
+		<input type="submit" name="saveButton" value="Save">
 	</form>
 {{end}}
 {{template "footer"}}

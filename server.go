@@ -1,6 +1,7 @@
 /*
-TODO: Delete posts & post tags
+TODO: Post tags
 TODO: Write content (band blurbs etc.) (Twitter feed? FB like link?)
+TODO: Make the login template use <keygen> fields (http basic authentication?)
 TODO: Make pages prettier (CSS, Images)
 TODO: Add RSS feed (gorilla/feeds?)
 */
@@ -129,12 +130,17 @@ func editHandler(w http.ResponseWriter, req *http.Request) {
 				err := render(w, context, "templates/edit.html")
 				checkErr(err, "Could not render Edit template")
 			case "POST":
-				post.Title = req.FormValue("title")
-				post.Author = req.FormValue("author")
-				post.CreatedAt, _ = time.Parse(time.RFC3339, req.FormValue("created"))
-				post.UpdatedAt, _ = time.Parse(time.RFC3339, req.FormValue("updated"))
-				post.Body = req.FormValue("body")
-				db.Save(&post)
+			// TODO look into "bind" library for getting form values & converting to/from time.Time
+				if len(req.FormValue("deleteButton")) > 0 { // Check whether they pressed the "delete" button
+					db.Delete(post)
+				} else {
+					post.Title = req.FormValue("title")
+					post.Author = req.FormValue("author")
+					post.CreatedAt, _ = time.Parse(time.RFC3339, req.FormValue("created"))
+					post.UpdatedAt, _ = time.Parse(time.RFC3339, req.FormValue("updated"))
+					post.Body = req.FormValue("body")
+					db.Save(&post)
+				}
 			http.Redirect(w, req, "/", 302)
 		}
 	} else { // If no auth cookie
@@ -150,8 +156,8 @@ func logoutHandler (w http.ResponseWriter, req *http.Request) {
 /* TODO Add users etc.
 func adminHandler(w http.ResponseWriter, req *http.Request) {
 
-}
-*/
+}*/
+
 func staticHandler(w http.ResponseWriter, req *http.Request) {
 	file_name := req.URL.Path[len("static/"):] // Get filename from URL
 	if len(file_name) != 0 {
