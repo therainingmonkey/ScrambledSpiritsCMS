@@ -7,7 +7,8 @@
 	{{if .Username}}<a href="/edit/">New post</a>{{end}}
 	{{range .Posts}}
 		<div class="PostInfo">
-			<h3>{{.Title}}</h3> by {{.Author}}
+			<h3>{{.Title}}</h3>
+			<small>by {{.Author}}</small>
 		</div>
 		<div class="PostBody">
 		{{.Body}}
@@ -18,7 +19,7 @@
 	{{end}}
 
 	<p>End of template.</p>
-	<img src="static/img.jpg">
+	<img src="/static/img.jpg">
 
 {{template "footer" .}}
 {{end}}

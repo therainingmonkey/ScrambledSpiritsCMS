@@ -20,17 +20,17 @@ type Post struct {
 	Title	string
 	Body	string
 	Author	string
+	Tags	[]Tag
 }
 
 // Tag table, one table for each tag
 type Tag struct {
 	gorm.Model
 	PostID	uint
-
 }
 
 type User struct {
 	gorm.Model
-	Username string
-	PasswordHash string
+	Username	string
+	PasswordHash	string
 }

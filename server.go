@@ -1,8 +1,9 @@
 /*
-TODO: Post tags
+TODO: Debug artisthandler - 404 message, get posts &c.
 TODO: Write content (band blurbs etc.) (Twitter feed? FB like link?)
-TODO: Make the login template use <keygen> fields (http basic authentication?)
 TODO: Make pages prettier (CSS, Images)
+TODO: Paginate posts
+TODO: Make the login template use <keygen> fields (http basic authentication?)
 TODO: Add RSS feed (gorilla/feeds?)
 */
 package main
@@ -23,7 +24,10 @@ import (
 
 var (
 	db gorm.DB
-	ArtistContextMap = map[string]Context {"thecalamity": Context {StaticText: "The Clamity are a acoostik band."}} // TODO Content
+	ArtistContextMap = map[string]Context {
+		"thecalamity": Context {StaticText: "The Clamity R uh b@nd."},
+		"aweatherman": Context {StaticText: "A Weatherman is unnecessary for determining the current weather."},
+										  } // TODO Content
 )
 
 type Context struct {
@@ -49,6 +53,7 @@ func initDB() (err error) {
 	// Create a table for each tag linking to posts with that tag
 	for artistName, _ := range ArtistContextMap {
 		db.Table("Tag" + artistName).CreateTable(&models.Tag{}) // Append "tag" to artistName to avoid future collisions
+		db.Table("Tag" + artistName).Model(&models.Tag{}).AddForeignKey("PostID", "Posts(ID)", "CASCADE", "NO ACTION")
 	}
 	db.AutoMigrate()
 	return err
@@ -61,6 +66,16 @@ func render(w http.ResponseWriter, context Context, tmpl string) error {
 	}
 	err = t.ExecuteTemplate(w, "content", context)
 	return err
+}
+
+func checkTagCheckbox(tagstr string, postID uint, req *http.Request) error {
+	if len(req.FormValue(tagstr)) > 0 {
+		dbtag := models.Tag{PostID: postID}
+		err := db.Table("Tag" + tagstr).Create(&dbtag).Error
+		return err
+	} else {
+		return nil
+	}
 }
 
 //TODO separate context from server logic? error handling,
@@ -82,7 +97,7 @@ func artistHandler(w http.ResponseWriter, req *http.Request) {
 		context, ok := ArtistContextMap[artistName] // OK is true if the key exists, false otherwise
 		if ok {
 			// Lookup tag from artistcontextmap
-			db.Limit(10).Order("created_at desc").Table("Tag" + artistName).Association("Post").Find(&context.Posts) // FIXME
+			db.Exec("SELECT * FROM Posts, Tag" + artistName + " WHERE Posts.ID=Tag" + artistName + ".PostID").Find(&context.Posts) // FIXME: DIRTY HACK, DO IT BETTER
 			err := render(w, context, "templates/main.html")
 			checkErr(err, "Problem generating artist page")
 		}
@@ -136,10 +151,12 @@ func editHandler(w http.ResponseWriter, req *http.Request) {
 				} else {
 					post.Title = req.FormValue("title")
 					post.Author = req.FormValue("author")
-					post.CreatedAt, _ = time.Parse(time.RFC3339, req.FormValue("created"))
-					post.UpdatedAt, _ = time.Parse(time.RFC3339, req.FormValue("updated"))
 					post.Body = req.FormValue("body")
 					db.Save(&post)
+					for key := range ArtistContextMap {
+						err := checkTagCheckbox(key, post.ID, req)
+						checkErr(err, "Problem parsing 'tag' checkboxes.")
+					}
 				}
 			http.Redirect(w, req, "/", 302)
 		}

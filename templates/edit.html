@@ -7,8 +7,13 @@
 		{{if .ID}}<input type="submit" name="deleteButton" value="Delete!"><br>{{end}}
 		Title: <input type="text" name="title" value="{{.Title}}"><br>
 		Author: <input type="text" name="author" value="{{.Author}}"><br>
-		Created At (works best with Chrome): <input type="datetime-local" name="created" value="{{.CreatedAt}}"><br>
-		Updated At (works best with Chrome: <input type="datetime-local" name="updated" value="{{.UpdatedAt}}">
+		<fieldset>
+			<legend>Tags</legend>
+			<input type="checkbox" name="thecalamity">
+			<input type="checkbox" name="bingolittle">
+			<input type="checkbox" name="aweatherman">
+			<input type="checkbox" name="figurinesofthewretched">
+	   </fieldset>
 		<div class="EditPostBody">
 			<textarea name="body" rows="50" cols="80">{{.Body}}</textarea>
 		</div>
