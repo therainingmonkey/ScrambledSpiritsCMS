@@ -28,6 +28,8 @@ var (
 	ArtistContextMap = map[string]Context {
 		"thecalamity": Context {StaticText: "The Clamity R uh b@nd."},
 		"aweatherman": Context {StaticText: "A Weatherman is unnecessary for determining the current weather."},
+		"bingolittle": Context {StaticText: "Bingo Little will make you shiver."},
+		"figurinesofthewretched": Context {StaticText: "Figurines of the Wretched are pushing the boundaries of music, taste and decency."}
 										  } // TODO Content
 )
 
