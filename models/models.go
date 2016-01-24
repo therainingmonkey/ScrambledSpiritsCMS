@@ -26,6 +26,7 @@ type Post struct {
 // Tag table, one table for each tag
 type Tag struct {
 	gorm.Model
+	Post	Post
 	PostID	uint
 }
 

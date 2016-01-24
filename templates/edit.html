@@ -9,13 +9,13 @@
 		Author: <input type="text" name="author" value="{{.Author}}"><br>
 		<fieldset>
 			<legend>Tags</legend>
-			<input type="checkbox" name="thecalamity">
-			<input type="checkbox" name="bingolittle">
-			<input type="checkbox" name="aweatherman">
-			<input type="checkbox" name="figurinesofthewretched">
+			<label><input type="checkbox" name="thecalamity">The Calamity</label>
+			<label><input type="checkbox" name="aweatherman">A Weatherman</label>
+			<label><input type="checkbox" name="bingolittle">Bingo Little</label>
+			<label><input type="checkbox" name="figurinesofthewretched">Figurines OTW</label>
 	   </fieldset>
 		<div class="EditPostBody">
-			<textarea name="body" rows="50" cols="80">{{.Body}}</textarea>
+			<textarea name="body" rows="30" cols="80">{{.Body}}</textarea>
 		</div>
 		<input type="submit" name="saveButton" value="Save">
 	</form>

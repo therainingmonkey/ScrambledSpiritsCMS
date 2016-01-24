@@ -2,6 +2,7 @@
 TODO: Debug artisthandler - 404 message, get posts &c.
 TODO: Write content (band blurbs etc.) (Twitter feed? FB like link?)
 TODO: Make pages prettier (CSS, Images)
+TODO: button to upload images & embed in posts.
 TODO: Paginate posts
 TODO: Make the login template use <keygen> fields (http basic authentication?)
 TODO: Add RSS feed (gorilla/feeds?)
@@ -48,12 +49,13 @@ func initDB() (err error) {
 	// TODO Check whether tables exist before creating them
 	db, err = gorm.Open("sqlite3", "test.db") // TODO change db name
 	checkErr(err, "Could not open databse")
+	db.LogMode(true) // DEBUG
 	db.CreateTable(&models.Post{}) // Create a table for posts
 	db.CreateTable(&models.User{}) // Create a table for users
 	// Create a table for each tag linking to posts with that tag
 	for artistName, _ := range ArtistContextMap {
 		db.Table("Tag" + artistName).CreateTable(&models.Tag{}) // Append "tag" to artistName to avoid future collisions
-		db.Table("Tag" + artistName).Model(&models.Tag{}).AddForeignKey("PostID", "Posts(ID)", "CASCADE", "NO ACTION")
+	//	db.Table("Tag" + artistName).Model(&models.Tag{}).AddForeignKey("PostID", "Posts(ID)", "CASCADE", "NO ACTION") // FIXME
 	}
 	db.AutoMigrate()
 	return err
@@ -96,10 +98,17 @@ func artistHandler(w http.ResponseWriter, req *http.Request) {
 	if len(artistName) != 0 {
 		context, ok := ArtistContextMap[artistName] // OK is true if the key exists, false otherwise
 		if ok {
-			// Lookup tag from artistcontextmap
-			db.Exec("SELECT * FROM Posts, Tag" + artistName + " WHERE Posts.ID=Tag" + artistName + ".PostID").Find(&context.Posts) // FIXME: DIRTY HACK, DO IT BETTER
+			tags := []models.Tag{}
+			db.Table("Tag" + artistName).Order("created_at desc").Find(&tags) // Fills tags
+			for _, tag := range(tags) { // Find the tag's associated post and add it to context.Posts
+				post := models.Post{}
+				err := db.Model(&tag).Related(&post).Error
+				checkErr(err, "Problem finding tagged posts.")
+				context.Posts = append(context.Posts, post)
+			} // TODO: Can this be structured better? Pagination? More within the idiom of GORM?
 			err := render(w, context, "templates/main.html")
 			checkErr(err, "Problem generating artist page")
+			return
 		}
 	}
 	http.NotFound(w, req)
