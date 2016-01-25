@@ -6,6 +6,6 @@ A web server / CMS for The Scrambled Spirits Collective
 Roadmap
 -------
 
-1. Add a web interface for making / editing posts
-2. Improve page design / layout
+1. Improve page design / layout
 3. Create content
+3. Extra functionality (RSS, images &c.)
