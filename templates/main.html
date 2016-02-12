@@ -1,6 +1,7 @@
 {{define "content"}}
 {{template "header" .}}
 
+<div class="main">
 <h1>{{.Title}}</h1>
 	{{.StaticText}}
 	<hr>
@@ -19,7 +20,6 @@
 	{{end}}
 
 	<p>End of template.</p>
-	<img src="/static/img.jpg">
-
+</div>
 {{template "footer" .}}
 {{end}}

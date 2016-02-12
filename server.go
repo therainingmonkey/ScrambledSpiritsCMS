@@ -29,7 +29,7 @@ var (
 		"thecalamity": Context {StaticText: "The Clamity R uh b@nd."},
 		"aweatherman": Context {StaticText: "A Weatherman is unnecessary for determining the current weather."},
 		"bingolittle": Context {StaticText: "Bingo Little will make you shiver."},
-		"figurinesofthewretched": Context {StaticText: "Figurines of the Wretched are pushing the boundaries of music, taste and decency."}
+		"figurinesofthewretched": Context {StaticText: "Figurines of the Wretched are pushing the boundaries of music, taste and decency."},
 										  } // TODO Content
 )
 
@@ -158,7 +158,10 @@ func editHandler(w http.ResponseWriter, req *http.Request) {
 			case "POST":
 			// TODO look into "bind" library for getting form values & converting to/from time.Time
 				if len(req.FormValue("deleteButton")) > 0 { // Check whether they pressed the "delete" button
-					db.Delete(post)
+					db.Table("posts").Delete(post)
+					for artistName, _ := range ArtistContextMap {
+						db.Table("Tag" + artistName).Where("post_id = ?", post.ID).Delete(models.Tag{})
+					}
 				} else {
 					post.Title = req.FormValue("title")
 					post.Author = req.FormValue("author")
