@@ -1,5 +1,4 @@
 /*
-TODO: Debug artisthandler - 404 message, get posts &c.
 TODO: Write content (band blurbs etc.) (Twitter feed? FB like link?)
 TODO: Make pages prettier (CSS, Images)
 TODO: button to upload images & embed in posts.
@@ -11,6 +10,7 @@ package main
 
 import (
 	"io"
+	"io/ioutil"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -25,12 +25,12 @@ import (
 
 var (
 	db gorm.DB
-	ArtistContextMap = map[string]Context {
-		"thecalamity": Context {StaticText: "The Clamity R uh b@nd."},
-		"aweatherman": Context {StaticText: "A Weatherman is unnecessary for determining the current weather."},
-		"bingolittle": Context {StaticText: "Bingo Little will make you shiver."},
-		"figurinesofthewretched": Context {StaticText: "Figurines of the Wretched are pushing the boundaries of music, taste and decency."},
-										  } // TODO Content
+	ArtistContextMap = map[string]*Context {
+		"thecalamity": &Context {Title: "The Calamity"},
+		"aweatherman": &Context {Title: "A Weatherman"},
+		"bingolittle": &Context {Title: "Bingo Little"},
+		"figurinesofthewretched": &Context {Title: "Figurines of the Wretched"},
+	}
 )
 
 type Context struct {
@@ -41,9 +41,17 @@ type Context struct {
 }
 
 
-func checkErr(err error, message string){
+func checkErr(err error, message string) {
 	if err != nil{
 		panic(message + err.Error()) // TODO Change to log.Fatal(message)
+	}
+}
+
+func buildArtistMap() {	// TODO: Make this work
+	for artistName, _ := range ArtistContextMap {
+		text, err := ioutil.ReadFile("static/sitetext/" + artistName)
+		checkErr(err, "Could not load static text")
+		ArtistContextMap[artistName].StaticText = string(text)
 	}
 }
 
@@ -51,7 +59,7 @@ func initDB() (err error) {
 	// TODO Check whether tables exist before creating them
 	db, err = gorm.Open("sqlite3", "test.db") // TODO change db name
 	checkErr(err, "Could not open databse")
-	db.LogMode(true) // DEBUG
+//	db.LogMode(true) // DEBUG
 	db.CreateTable(&models.Post{}) // Create a table for posts
 	db.CreateTable(&models.User{}) // Create a table for users
 	// Create a table for each tag linking to posts with that tag
@@ -108,7 +116,7 @@ func artistHandler(w http.ResponseWriter, req *http.Request) {
 				checkErr(err, "Problem finding tagged posts.")
 				context.Posts = append(context.Posts, post)
 			} // TODO: Can this be structured better? Pagination? More within the idiom of GORM?
-			err := render(w, context, "templates/main.html")
+			err := render(w, *context, "templates/main.html")
 			checkErr(err, "Problem generating artist page")
 			return
 		}
@@ -203,6 +211,7 @@ func staticHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func main(){
+	buildArtistMap()
 	err := initDB()
 	checkErr(err, "Could not open database")
 

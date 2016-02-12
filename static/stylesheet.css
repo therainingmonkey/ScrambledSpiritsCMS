@@ -1,10 +1,22 @@
+@font-face {
+	font-family: Itim;
+	src: url('/static/fonts/Itim/Itim-Regular.ttf');
+}
+
+@font-face {
+	font-family: MyFont;
+	src: url('/static/fonts/Montserrat/Montserrat-Regular.ttf')
+}
+
 body {
+	font-family: MyFont, sans-serif;
 	background-color: #1b1919;
-	color: #ecbe6e;
+	color: #fade47;
 	margin: 0;
 }
 
 ul.topnav {
+	font-family: Itim, serif;
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
@@ -20,7 +32,7 @@ ul.topnav li a {
 	display: block;
 	color: darkseagreen;
 	text-align: center;
-	padding: 14px 16px;
+	padding: 12px 16px;
 	text-decoration: none;
 }
 
@@ -34,9 +46,21 @@ ul.topnav ul.right {
 	background-color: darkblue;
 }
 
+div.main {
+	text-align: center;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+div.posts {
+	color: #b0d61b;
+}
+
 /* Stacks the top navbar when the screen is too narrow for it to fit.
 Responsivityness! */
 @media screen and (max-width: 850px) {
 	ul.topnav ul.right,
 	ul.topnav li {float: none;}
+	ul.topnav li a {padding: 2px 16px;}
+	div.main {margin-left: 2%; margin-right: 2%;}
 }

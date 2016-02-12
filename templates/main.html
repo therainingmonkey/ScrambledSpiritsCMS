@@ -2,23 +2,27 @@
 {{template "header" .}}
 
 <div class="main">
+
 <h1>{{.Title}}</h1>
 	{{.StaticText}}
 	<hr>
+	<div class="posts">
 	{{if .Username}}<a href="/edit/">New post</a>{{end}}
 	{{range .Posts}}
 		<div class="PostInfo">
 			<h3>{{.Title}}</h3>
-			<small>by {{.Author}}</small>
+			<small>by {{.Author}}, {{.CreatedAt}}</small>
 		</div>
+		<br>
 		<div class="PostBody">
 		{{.Body}}
 		</div>
 		{{if $.Username}}
 			<a href="/edit/{{.ID}}">edit</a>
 		{{end}}
+	<hr>
 	{{end}}
-
+	</div>
 	<p>End of template.</p>
 </div>
 {{template "footer" .}}
