@@ -56,6 +56,10 @@ div.posts {
 	color: #b0d61b;
 }
 
+div.PostBody {
+	text-align: left;
+}
+
 /* Stacks the top navbar when the screen is too narrow for it to fit.
 Responsivityness! */
 @media screen and (max-width: 850px) {

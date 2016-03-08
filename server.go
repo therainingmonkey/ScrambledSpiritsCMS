@@ -65,7 +65,6 @@ func initDB() (err error) {
 	// Create a table for each tag linking to posts with that tag
 	for artistName, _ := range ArtistContextMap {
 		db.Table("Tag" + artistName).CreateTable(&models.Tag{}) // Append "tag" to artistName to avoid future collisions
-	//	db.Table("Tag" + artistName).Model(&models.Tag{}).AddForeignKey("PostID", "Posts(ID)", "CASCADE", "NO ACTION") // FIXME
 	}
 	db.AutoMigrate()
 	return err
@@ -90,16 +89,17 @@ func checkTagCheckbox(tagstr string, postID uint, req *http.Request) error {
 	}
 }
 
-//TODO separate context from server logic? error handling,
 func homeHandler(w http.ResponseWriter, req * http.Request) {
 	username := auth.GetUserName(req)
+	text, err := ioutil.ReadFile("static/sitetext/home")
+	checkErr(err, "Could not load static text")
 	context := Context{
 		Title: "Scrambled Spirits Collective",
 		Username: username,
-		StaticText: "SSC 4 lyf 2k6teen!",
-					  } // TODO Content
+		StaticText: string(text),
+					  } // TODO Read from file, add content.
 	db.Order("created_at desc").Find(&context.Posts) // Fills context.Posts with posts from the database.
-	err := render(w, context, "templates/main.html")
+	err = render(w, context, "templates/main.html")
 	checkErr(err, "Problem generating homepage")
 }
 
