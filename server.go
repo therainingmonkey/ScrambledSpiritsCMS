@@ -19,8 +19,8 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
 	// Local Packages
-	"./auth"
-	"./models"
+	"github.com/therainingmonkey/ScrambledSpiritsCMS/auth"
+	"github.com/therainingmonkey/ScrambledSpiritsCMS/models"
 )
 
 var (
