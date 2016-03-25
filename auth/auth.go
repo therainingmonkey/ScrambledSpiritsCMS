@@ -30,7 +30,7 @@ func CheckCredentials(passwordHash, pass string) bool {
 	}
 }
 
-// Returns username if they have an authentication cookie, else returns and epty string
+// Returns username if they have an authentication cookie, else returns and empty string
 func GetUserName(req *http.Request) (userName string) {
 	if cookie, err := req.Cookie("session"); err == nil {
 		cookieValue := make(map[string]string)
