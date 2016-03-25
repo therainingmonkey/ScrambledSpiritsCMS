@@ -36,7 +36,7 @@ var (
 type Context struct {
 	Title string
 	Username string
-	StaticText string
+	StaticText template.HTML
 	Posts []models.Post
 }
 
@@ -51,7 +51,7 @@ func buildArtistMap() {	// TODO: Make this work
 	for artistName, _ := range ArtistContextMap {
 		text, err := ioutil.ReadFile("static/sitetext/" + artistName)
 		checkErr(err, "Could not load static text")
-		ArtistContextMap[artistName].StaticText = string(text)
+		ArtistContextMap[artistName].StaticText = template.HTML(string(text))
 	}
 }
 
@@ -96,7 +96,7 @@ func homeHandler(w http.ResponseWriter, req * http.Request) {
 	context := Context{
 		Title: "Scrambled Spirits Collective",
 		Username: username,
-		StaticText: string(text),
+		StaticText: template.HTML(string(text)),
 					  } // TODO Read from file, add content.
 	db.Order("created_at desc").Find(&context.Posts) // Fills context.Posts with posts from the database.
 	err = render(w, context, "templates/main.html")
@@ -119,6 +119,8 @@ func artistHandler(w http.ResponseWriter, req *http.Request) {
 			err := render(w, *context, "templates/main.html")
 			checkErr(err, "Problem generating artist page")
 			return
+		} else {
+			http.NotFound(w, req)
 		}
 	}
 	http.NotFound(w, req)

@@ -37,13 +37,18 @@ ul.topnav li a {
 }
 
 ul.topnav li a:hover {
-	background-color: crimson;
+	background-color: #C13791;
 }
 
 ul.topnav ul.right {
 	float: right;
 	list-style-type: none;
 	background-color: darkblue;
+}
+
+h1 {
+	color: #C13791;
+	text-decoration: underline;
 }
 
 div.main {
