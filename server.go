@@ -47,7 +47,7 @@ func checkErr(err error, message string) {
 	}
 }
 
-func buildArtistMap() {	// TODO: Make this work
+func buildArtistMap() {
 	for artistName, _ := range ArtistContextMap {
 		text, err := ioutil.ReadFile("static/sitetext/" + artistName)
 		checkErr(err, "Could not load static text")
@@ -166,17 +166,18 @@ func editHandler(w http.ResponseWriter, req *http.Request) {
 				err := render(w, context, "templates/edit.html")
 				checkErr(err, "Could not render Edit template")
 			case "POST":
-			// TODO look into "bind" library for getting form values & converting to/from time.Time
-				if len(req.FormValue("deleteButton")) > 0 { // Check whether they pressed the "delete" button
+				if len(req.FormValue("refreshButton")) > 0 {
+					buildArtistMap()
+				} else if len(req.FormValue("deleteButton")) > 0 { // Check whether they pressed the "delete" button
 					db.Table("posts").Delete(post)
 					for artistName, _ := range ArtistContextMap {
 						db.Table("Tag" + artistName).Where("post_id = ?", post.ID).Delete(models.Tag{})
 					}
-				} else {
+				} else if len(req.FormValue("saveButton")) > 0 { // Check whether they pressed the "save" button
 					post.Title = req.FormValue("title")
 					post.Author = req.FormValue("author")
 					post.Body = req.FormValue("body")
-					db.Save(&post)
+					db.Save(&post) // TODO look into "bind" library for getting form values & converting to/from time.Time
 					for key := range ArtistContextMap {
 						err := checkTagCheckbox(key, post.ID, req)
 						checkErr(err, "Problem parsing 'tag' checkboxes.")

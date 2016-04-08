@@ -4,6 +4,7 @@
 {{range .Posts}}
 	<h2>Editing {{.Title}}</h2>
 	<form method="POST">
+		<input type="submit" name="refreshButton" value="Refresh pages">
 		{{if .ID}}<input type="submit" name="deleteButton" value="Delete!"><br>{{end}}
 		Title: <input type="text" name="title" value="{{.Title}}"><br>
 		Author: <input type="text" name="author" value="{{.Author}}"><br>
