@@ -57,6 +57,14 @@ div.main {
 	margin-right: 10%;
 }
 
+div.bandcamp {
+		 float:right;
+		 padding: 20px;
+		 margin-left:auto;
+		 margin-right:0;
+	}
+}
+
 div.posts {
 	color: #b0d61b;
 }
@@ -65,11 +73,12 @@ div.PostBody {
 	text-align: left;
 }
 
-/* Stacks the top navbar when the screen is too narrow for it to fit.
+/* Adjust layout when the screen is too narrow for it to fit.
 Responsivityness! */
 @media screen and (max-width: 850px) {
 	ul.topnav ul.right,
 	ul.topnav li {float: none;}
 	ul.topnav li a {padding: 2px 16px;}
 	div.main {margin-left: 2%; margin-right: 2%;}
+	div.bandcamp {float:inherit;}
 }
