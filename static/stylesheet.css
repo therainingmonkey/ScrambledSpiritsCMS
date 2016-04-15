@@ -63,14 +63,19 @@ div.bandcamp {
 		 margin-left:auto;
 		 margin-right:0;
 	}
-}
 
 div.posts {
 	color: #b0d61b;
+
 }
 
+div.PostInfo h3 {
+	color: #fade47;
+	margin-bottom: 0px;
+}
 div.PostBody {
 	text-align: left;
+	font-size: 15px;
 }
 
 /* Adjust layout when the screen is too narrow for it to fit.
@@ -81,4 +86,8 @@ Responsivityness! */
 	ul.topnav li a {padding: 2px 16px;}
 	div.main {margin-left: 2%; margin-right: 2%;}
 	div.bandcamp {float:inherit;}
+}
+
+div {
+
 }
