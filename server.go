@@ -103,7 +103,6 @@ func homeHandler(w http.ResponseWriter, req * http.Request) {
 	checkErr(err, "Problem generating homepage")
 }
 
-// FIXME: Every time the page is refreshed, extra posts are added to the server's internal data structure, though the db remains the same.
 func artistHandler(w http.ResponseWriter, req *http.Request) {
 	artistName := req.URL.Path[len("/artist/"):] // Get artist name from URL
 	if len(artistName) != 0 {
