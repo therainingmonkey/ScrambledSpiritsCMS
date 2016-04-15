@@ -224,5 +224,5 @@ func main(){
 	http.HandleFunc("/edit/", editHandler)
 	http.HandleFunc("/logout/", logoutHandler)
 //	http.HandleFunc("/admin/", adminHandler)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":80", nil)
 }
