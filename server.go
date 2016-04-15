@@ -1,6 +1,6 @@
 /*
+TODO: Use HTML in posts (or markdown?)
 TODO: Write content (band blurbs etc.) (Twitter feed? FB like link?)
-TODO: Make pages prettier (CSS, Images)
 TODO: button to upload images & embed in posts.
 TODO: Paginate posts
 TODO: Make the login template use <keygen> fields (http basic authentication?)
@@ -51,7 +51,7 @@ func buildArtistMap() {
 	for artistName, _ := range ArtistContextMap {
 		text, err := ioutil.ReadFile("static/sitetext/" + artistName)
 		checkErr(err, "Could not load static text")
-		ArtistContextMap[artistName].StaticText = template.HTML(string(text))
+		ArtistContextMap[artistName].StaticText = template.HTML(text)
 	}
 }
 
@@ -64,7 +64,7 @@ func initDB() (err error) {
 	db.CreateTable(&models.User{}) // Create a table for users
 	// Create a table for each tag linking to posts with that tag
 	for artistName, _ := range ArtistContextMap {
-		db.Table("Tag" + artistName).CreateTable(&models.Tag{}) // Append "tag" to artistName to avoid future collisions
+		db.Table("Tag" + artistName).CreateTable(&models.Tag{}) // Prepend "tag" to artistName to avoid future collisions
 	}
 	db.AutoMigrate()
 	return err
@@ -96,18 +96,20 @@ func homeHandler(w http.ResponseWriter, req * http.Request) {
 	context := Context{
 		Title: "Scrambled Spirits Collective",
 		Username: username,
-		StaticText: template.HTML(string(text)),
-					  } // TODO Read from file, add content.
+		StaticText: template.HTML(text),
+					  }
 	db.Order("created_at desc").Find(&context.Posts) // Fills context.Posts with posts from the database.
 	err = render(w, context, "templates/main.html")
 	checkErr(err, "Problem generating homepage")
 }
 
+// FIXME: Every time the page is refreshed, extra posts are added to the server's internal data structure, though the db remains the same.
 func artistHandler(w http.ResponseWriter, req *http.Request) {
 	artistName := req.URL.Path[len("/artist/"):] // Get artist name from URL
 	if len(artistName) != 0 {
 		context, ok := ArtistContextMap[artistName] // OK is true if the key exists, false otherwise
 		if ok {
+			context.Posts = []models.Post{} // Reset the posts to avoid duplication on refresh.
 			tags := []models.Tag{}
 			db.Table("Tag" + artistName).Order("created_at desc").Find(&tags) // Fills tags
 			for _, tag := range(tags) { // Find the tag's associated post and add it to context.Posts
@@ -119,8 +121,6 @@ func artistHandler(w http.ResponseWriter, req *http.Request) {
 			err := render(w, *context, "templates/main.html")
 			checkErr(err, "Problem generating artist page")
 			return
-		} else {
-			http.NotFound(w, req)
 		}
 	}
 	http.NotFound(w, req)
@@ -166,7 +166,7 @@ func editHandler(w http.ResponseWriter, req *http.Request) {
 				err := render(w, context, "templates/edit.html")
 				checkErr(err, "Could not render Edit template")
 			case "POST":
-				if len(req.FormValue("refreshButton")) > 0 {
+				if len(req.FormValue("refreshButton")) > 0 { // Check whether they pressed the "update" button
 					buildArtistMap()
 				} else if len(req.FormValue("deleteButton")) > 0 { // Check whether they pressed the "delete" button
 					db.Table("posts").Delete(post)
