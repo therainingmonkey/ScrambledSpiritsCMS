@@ -47,7 +47,7 @@ ul.topnav ul.right {
 }
 
 h1 {
-	color: #C13791;
+	color: #b0d61b;
 	text-decoration: underline;
 }
 
@@ -69,8 +69,14 @@ div.posts {
 
 }
 
-div.PostInfo h3 {
+div.PostInfo {
+	font-size: 80%;
 	color: #fade47;
+	margin-bottom: 0px;
+}
+
+div.PostInfo h3 {
+	font-size: 130%;
 	margin-bottom: 0px;
 }
 div.PostBody {
